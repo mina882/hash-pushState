@@ -1,1 +1,1 @@
-# hash-pushState
+hash模式与history模式的两个小例子
