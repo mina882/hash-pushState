@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #nav a {
+            margin-right: 10px;
+        }
+
+        #nav a.act {
+            color: #FF0000;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="nav"></nav>
+    <main id="app"></main>
+    <script>
+        class Router {
+            constructor() {
+                this.navs = [{
+                    path: "#index",
+                    title: "首页",
+                    content: "首页-内容"
+                }, {
+                    path: "#news",
+                    title: "新闻",
+                    content: "新闻-内容"
+                }, {
+                    path: "#about",
+                    title: "关于",
+                    content: "关于-内容"
+                }]
+
+                this.navNode = document.getElementById("nav");
+                this.el = document.getElementById("app");
+            }
+            init() {
+                this.createNav();
+                this.haddleHashChage();
+                //监听hash值变动
+                window.addEventListener("hashchange", this.haddleHashChage.bind(this));
+            }
+            createNav() {//创建导航
+                let fragment = document.createDocumentFragment();
+                this.navs.forEach(nav => {
+                    let tagA = document.createElement("a");
+                    tagA.href = nav.path;
+                    tagA.innerText = nav.title;
+                    fragment.appendChild(tagA);
+                })
+                this.navNode.appendChild(fragment);
+            }
+            haddleHashChage() {//根据hash值，变动内容
+                const hashVal = window.location.hash || this.navs[0].path;
+                this.navs.forEach((nav, index) => {
+                    let curNodes = this.navNode.childNodes[index];
+                    curNodes.className = "";
+                    if (nav.path == hashVal) {
+                        curNodes.className = "act";
+                        this.el.innerHTML = nav.content;
+                    }
+                })
+            }
+        }
+
+        const router = new Router();
+        router.init();
+    </script>
+</body>
+
+</html>

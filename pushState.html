@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #nav a {
+            margin-right: 10px;
+        }
+
+        #nav a.act {
+            color: #FF0000;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="nav"></nav>
+    <main id="app"></main>
+    <script>
+        class Router {
+            constructor() {
+                this.navs = [{
+                    path: "?page=index",
+                    title: "首页",
+                    content: "首页-内容"
+                }, {
+                    path: "?page=news",
+                    title: "新闻",
+                    content: "新闻-内容"
+                }, {
+                    path: "?page=about",
+                    title: "关于",
+                    content: "关于-内容"
+                }];
+
+                this.navNode = document.getElementById("nav");
+                this.el = document.getElementById("app");
+                this.curPage = "";
+            }
+            init() {
+                this.createNav();
+                this.haddleNav();
+                this.haddlePopstate();
+                window.addEventListener("popstate", this.haddlePopstate.bind(this))
+            }
+            createNav() {//创建导航
+                let fragment = document.createDocumentFragment();
+                this.navs.forEach(nav => {
+                    let tagA = document.createElement("a");
+                    tagA.href = nav.path;
+                    tagA.setAttribute("data-page", nav.path);
+                    tagA.innerText = nav.title;
+                    fragment.appendChild(tagA);
+                })
+                this.navNode.appendChild(fragment);
+            }
+            haddleNav() {//点击导航
+                this.navNode.addEventListener("click", function (evt) {
+                    evt.preventDefault();
+                    let target = evt.target;
+                    if (target.nodeName == "A") {
+                        this.curPage = target.getAttribute("data-page");
+                        history.pushState("", "", this.curPage)
+                        this.navToContent();
+                    }
+                }.bind(this))
+            }
+            navToContent() {//切换内容
+                this.navs.forEach((nav, index) => {
+                    let curNodes = this.navNode.childNodes[index];
+                    curNodes.className = "";
+                    if (nav.path == this.curPage) {
+                        curNodes.className = "act";
+                        this.el.innerHTML = nav.content;
+                    }
+                })
+            }
+            haddlePopstate() {//查询参数发生变化时
+                this.curPage = this.queryParams();
+                this.navToContent();
+            }
+            queryParams() {//查询参数
+                return window.location.search || this.navs[0].path;
+            }
+        }
+
+        const router = new Router();
+        router.init();
+    </script>
+</body>
+
+</html>
